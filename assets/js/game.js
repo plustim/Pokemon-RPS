@@ -205,17 +205,20 @@ function resolveMatch(snap){
 
 	if( p1 === p2 ){
 		// both are the same, draw
+		alert("draw");
 		console.log("draw");
 	}else if( p1 === "timeout"
 		|| p1 === "bulbasaur" && p2 === "charmander" 
 		|| p1 === "charmander" && p2 === "squirtle" 
 		|| p1 === "squirtle" && p2 === "bulbasaur" ){
 		// player 1 loses
+		alert("Player 2 Wins");
 		console.log("player 2 wins");
 		wins2++;
 		losses1++;
 	}else{
 		// player 1 wins
+		alert("Player 1 Wins");
 		console.log("player 1 wins");
 		wins1++;
 		losses2++;

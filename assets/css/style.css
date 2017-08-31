@@ -1,10 +1,5 @@
 @import url('reset.css');
 
-#banter{
-	border: 1px solid black;
-
-}
-
 .oo1, .oo4, .oo7{
 	height: 50px;
 	width: 50px;
@@ -12,10 +7,12 @@
 	background-size: contain;
 	cursor: pointer;
 	border-radius: 25px;
-	background-color: white;
+	background-color: #eee;
+	transition: 0.2s linear background-color;
+	margin: 0 10px;
 }
 .oo1:hover, .oo4:hover, .oo7:hover{
-	background-color: grey;
+	background-color: #ccc;
 }
 
 .oo1{
@@ -27,3 +24,21 @@
 .oo7{
 	background-image: url("../images/007.png");
 }
+
+/* chat styles */
+#chat{
+	max-width: 400px;
+	margin: auto;
+}
+#banter{
+	border: 1px solid black;
+}
+.blue{
+	color: blue;
+}
+.red{
+	color: red;
+}
+
+
+
