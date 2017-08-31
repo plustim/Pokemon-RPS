@@ -9,45 +9,51 @@ var config = {
 firebase.initializeApp(config);
 
 var database = firebase.database();
+
+var refConnections = database.ref("/connections");
+var refConnected = database.ref(".info/connected");
+var refPlayers = database.ref("/players");
+var refBanter = database.ref("/banter");
+var refStatus = database.ref("/status");
+
 var userID = "unique identifier";
 var userName = "";
-var playerOne = "";
-var playerTwo = "";
+var playerRed = {
+	name: "red",
+	id: "",
+	wins: 0,
+	losses: 0,
+	choice: ""
+};
+var playerBlue = {
+	name: "blue",
+	id: "",
+	wins: 0,
+	losses: 0,
+	choice: ""
+};
 
-// Link to Firebase Database for viewer tracking
-var connectionsRef = database.ref("/connections");
-var connectedRef = database.ref(".info/connected");
 
 // Add ourselves to presence list when online.
-connectedRef.on("value", function(snap){
+refConnected.on("value", function(snap){
 	if(snap.val()){
 		//
-		var con = connectionsRef.push(true);
+		var con = refConnections.push(true);
 		var n = (""+con).split("/");
 		userID = n[n.length - 1];
 		console.log("my id: " + userID);
 		con.onDisconnect().remove();
-		// if disconnect is of player, end game and remove player
+		// if disconnected user is a player, make leaving message
+		if(1){};
 	}
 });
 
 // Number of online users is the number of objects in the presence list.
-connectionsRef.on("value", function(snap){
+refConnections.on("value", function(snap){
 	console.log(snap.numChildren() + " currently viewing.");
-	// check to see if a player left
-	if( !snap.child(player1).exists() && database.ref("/status").val().gameState === "playing"){
-		// set player1 = player2 and player2 = empty
-		// set gameState to "seeking"
-	}else if( !snap.child(player2).exists() && database.ref("/status").val().gameState === "playing"){
-		// set player2 = empty
-		// set gameState to "seeking"
-	}else if( !snap.child(player1).exists() && !snap.child(player2).exists() ){
-		// set player1 = empty and player2 = empty
-		// set gameState to "empty"
-	}
 });
 
-database.ref("/status").on("value", function(snap){
+refStatus.on("value", function(snap){
 	// update status of current game
 
 	if( snap.child("player1").exists() ){
@@ -63,52 +69,78 @@ database.ref("/status").on("value", function(snap){
 	}
 })
 
-// when server gets message, it will display the message (doesn't save message history to DB, just sends to all connected)
-database.ref("/banter").on("value", function(snap) {
-
-	if( snap.child("userName").exists() && snap.child("message").exists() ){
-		console.log(snap.val().userName + ": " + snap.val().message);
-		if( snap.val().userID === playerOne ){
-			// show chat bubble over first player
-		}else if( snap.val().userID === playerTwo ){
-			// show chat bubble over second player
+// listens for change to player.  This includes initialization, choices, and score updates
+refPlayers.on("value", function(snap){
+	// making sure we have two players
+	if( snap.child("player1").exists() && snap.child("player2").exists() ){ // both players are set
+		$("#character-select").html("");
+		// show the vs scene
+		if(snap.val().player1.choice !== "undecided"){
+			// show ball for player 1
+			$("#selection-1").html("ball");
 		}
-	}else{
-		console.log("error");
+		if(snap.val().player2.choice !== "undecided"){
+			// show ball for player 2
+			$("#selection-2").html("ball");
+		}
+		if( snap.val().player1.id === userID && snap.val().player1.choice === "undecided" ){ // user is player 1
+			// give options for player input
+			$("#poke-select").html("<div id='select-1'><div class='oo1' data-name='bulbasaur'></div><div class='oo4' data-name='charmander'></div><div class='oo7' data-name='squirtle'></div></div>");
+		}else if( snap.val().player2.id === userID  && snap.val().player1.choice === "undecided" ){ // user is player 2
+			$("#poke-select").html("<div id='select-2'><div class='oo1' data-name='bulbasaur'></div><div class='oo4' data-name='charmander'></div><div class='oo7' data-name='squirtle'></div></div>");
+		}
 
+	}else if( (!snap.child("player1").exists() && !snap.child("player2").exists()) || !snap.exists() ){ // no player is set, user can select either
+		$("#character-select").html( "<button id='player1'>red</button><button id='player2'>blue</button>" );
+	}else if( !snap.child("player1").exists() && snap.val().player2.id !== userID ){ // only player 2 is set, and user is not player 2, user can select 1
+		$("#character-select").html( "<button id='player1'>red</button>" );
+	}else if( !snap.child("player2").exists() && snap.val().player1.id !== userID ){ // only player 1 is set, and user is not player 1, user can select 2
+		$("#character-select").html( "<button id='player2'>blue</button>" );
+	}else if( !snap.child("player1").exists() || !snap.child("player2").exists() ){ // user is a player, but other player is not set: waiting for opponent
+		$("#character-select").html( "" );
 	}
-/*  // If Firebase has a highPrice and highBidder stored (first case)
-  if (snapshot.child("highBidder").exists() && snapshot.child("highPrice").exists()) {
+});
 
-    // Set the local variables for highBidder equal to the stored values in firebase.
-    highBidder = snapshot.val().highBidder;
-    highPrice = parseInt(snapshot.val().highPrice);
+// set user as player 1 (red)
+$("#character-select").on("click", "#player1", function(){
+	var player1Ref = refPlayers.child("player1");
+	player1Ref.set({
+		id: userID,
+		name: userName,
+		wins: 0,
+		losses: 0,
+		choice: "undecided"
+	});
+	player1Ref.onDisconnect().remove();
+});
 
-    // change the HTML to reflect the newly updated local values (most recent information from firebase)
-    $("#highest-bidder").html(snapshot.val().highBidder);
-    $("#highest-price").html("$" + snapshot.val().highPrice);
+// set user as player 2 (blue)
+$("#character-select").on("click", "#player2", function(){
+	var player2Ref = refPlayers.child("player2");
+	player2Ref.set({
+		id: userID,
+		name: userName,
+		wins: 0,
+		losses: 0,
+		choice: "undecided"
+	});
+	player2Ref.onDisconnect().remove();
+});
 
-    // Print the local data to the console.
-    console.log(snapshot.val().highBidder);
-    console.log(snapshot.val().highPrice);
-  }
+// set the choice for player 1 (red)
+$("#poke-select").on("click", "#select-1 div", function(){
+	var selection = $(this).attr("data-name");
+	console.log("picked " + selection);
+	var ref = database.ref("/players/player1").child("choice");
+	ref.set(selection);
+});
 
-  // Else Firebase doesn't have a highPrice/highBidder, so use the initial local values.
-  else {
-
-    // Change the HTML to reflect the local value in firebase
-    $("#highest-bidder").html(highBidder);
-    $("#highest-price").html("$" + highPrice);
-
-    // Print the local data to the console.
-    console.log("local High Price");
-    console.log(highBidder);
-    console.log(highPrice);
-  }*/
-
-// If any errors are experienced, log them to console.
-}, function(errorObject) {
-  console.log("The read failed: " + errorObject.code);
+// set the choice for player 2 (blue)
+$("#poke-select").on("click", "#select-2 div", function(){
+	var selection = $(this).attr("data-name");
+	console.log("picked " + selection);
+	var ref = database.ref("/players/player2").child("choice");
+	ref.choice.set(selection);
 });
 
 // sets the userName when submitted
@@ -119,10 +151,10 @@ $("#name-form").on("submit", function(){
 })
 
 // send chat message to server when submitted
-$("#banter").on("submit", function(){
+$("#send-banter").on("submit", function(){
 	event.preventDefault();
 	if( $("#bant").val().trim() ){
-		database.ref("/banter").set({
+		refBanter.set({
 			userID: 	userID,
 			userName:	userName,
 			message: 	$("#bant").val().trim()
@@ -130,6 +162,30 @@ $("#banter").on("submit", function(){
 		$("#bant").val("");
 	}
 })
+
+// get chat message from server on value change
+refBanter.on("value", function(snap) {
+	if( snap.exists() ){
+		console.log(snap.val().userName + ": " + snap.val().message);
+		var nameColor = "black";
+		if( snap.val().userID === playerRed.id ){
+			// show chat bubble over first player
+			nameColor = "red";
+		}else if( snap.val().userID === playerBlue.id ){
+			// show chat bubble over second player
+			nameColor = "blue";
+		}
+		var name = $("<span>").text(snap.val().userName + ": ").addClass(nameColor);
+		var bant = $("<span>").text(snap.val().message);
+		var p = $("<p>").append(name, bant);
+		$("#banter").append(p);
+
+	}
+}, function(errorObject) {
+  console.log("The read failed: " + errorObject.code);
+});
+
+refBanter.onDisconnect().remove();
 
 // send selection to server when option is clicked
 $("#pokePicker").on("click", ".option", function(){

@@ -1,1 +1,29 @@
 @import url('reset.css');
+
+#banter{
+	border: 1px solid black;
+
+}
+
+.oo1, .oo4, .oo7{
+	height: 50px;
+	width: 50px;
+	display: inline-block;
+	background-size: contain;
+	cursor: pointer;
+	border-radius: 25px;
+	background-color: white;
+}
+.oo1:hover, .oo4:hover, .oo7:hover{
+	background-color: grey;
+}
+
+.oo1{
+	background-image: url("../images/001.png");
+}
+.oo4{
+	background-image: url("../images/004.png");
+}
+.oo7{
+	background-image: url("../images/007.png");
+}
