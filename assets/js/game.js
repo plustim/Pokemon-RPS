@@ -93,9 +93,9 @@ refPlayers.on("value", function(snap){
 		}
 		if( snap.val().player1.id === userID && snap.val().player1.choice === "undecided" ){ // user is player 1
 			// give options for player input
-			$("#poke-select").html("<div id='select-1'><div class='oo1' data-name='bulbasaur'></div><div class='oo4' data-name='charmander'></div><div class='oo7' data-name='squirtle'></div></div>");
+			$("#poke-select").html("<span id='select-1'><div class='oo1' data-name='bulbasaur'></div><div class='oo4' data-name='charmander'></div><div class='oo7' data-name='squirtle'></div></span>");
 		}else if( snap.val().player2.id === userID  && snap.val().player2.choice === "undecided" ){ // user is player 2
-			$("#poke-select").html("<div id='select-2'><div class='oo1' data-name='bulbasaur'></div><div class='oo4' data-name='charmander'></div><div class='oo7' data-name='squirtle'></div></div>");
+			$("#poke-select").html("<span id='select-2'><div class='oo1' data-name='bulbasaur'></div><div class='oo4' data-name='charmander'></div><div class='oo7' data-name='squirtle'></div></span>");
 		}
 
 	}else if( (!snap.child("player1").exists() && !snap.child("player2").exists()) || !snap.exists() ){ // no player is set, user can select either
@@ -216,12 +216,16 @@ function resolveMatch(snap){
 		console.log("player 2 wins");
 		wins2++;
 		losses1++;
+		$("#player1 .score").html("wins: "+wins1+"<br>losses: "+losses1);
+		$("#player2 .score").html("wins: "+wins2+"<br>losses: "+losses2);
 	}else{
 		// player 1 wins
 		alert("Player 1 Wins");
 		console.log("player 1 wins");
 		wins1++;
 		losses2++;
+		$("#player1 .score").html("wins: "+wins1+"<br>losses: "+losses1);
+		$("#player2 .score").html("wins: "+wins2+"<br>losses: "+losses2);
 	}
 	// update players and reset choices
 	var ref2 = refPlayers.child("player2");

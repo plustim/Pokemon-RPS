@@ -25,6 +25,13 @@
 	background-image: url("../images/007.png");
 }
 
+#poke-select{
+	text-align: center;
+	max-width: 400px;
+	margin: auto;
+	border-top: 1px solid black;
+}
+
 /* chat styles */
 #chat{
 	max-width: 400px;
@@ -32,6 +39,16 @@
 }
 #banter{
 	border: 1px solid black;
+}
+#send-banter{
+	text-align: center;
+}
+#send-banter input{
+	width: 22%;
+	text-align: left;
+}
+#send-banter input#bant{
+	width: 75%;
 }
 .blue{
 	color: blue;
