@@ -39,22 +39,6 @@ refConnections.on("value", function(snap){
 	console.log(snap.numChildren() + " currently viewing.");
 });
 
-refStatus.on("value", function(snap){
-	// update status of current game
-
-	if( snap.child("player1").exists() ){
-		if( snap.child("player2").exists() ){
-			// both players set, RPS game in progress
-		}else{
-			// player1 is waiting for an opponent
-
-			
-		}
-	}else{
-		// no players are set, character selection screen
-	}
-})
-
 // listens for change to player.  This includes initialization, choices, and score updates
 refPlayers.on("value", function(snap){
 	// sets local vars
