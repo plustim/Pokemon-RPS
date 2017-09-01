@@ -1,4 +1,191 @@
 @import url('reset.css');
+@import url('https://fonts.googleapis.com/css?family=Noto+Sans');
+
+*{
+	font-family: 'Noto Sans', sans-serif !important;
+}
+
+header{
+	color: white;
+	background: #333;
+	border-bottom: 3px solid #d01515;
+	margin-bottom: 10px;
+	padding: 10px;
+}
+header h1{
+	font-size: 40px;
+	text-align: center;
+}
+
+#name-form{
+	text-align: center;
+}
+
+#container{
+	height: 400px;
+	position: relative;
+}
+
+/* player select */
+
+#character-select{
+	position: absolute;
+	display: none;
+}
+
+/* main vs game scene */
+
+#announce{
+	font-size: 40px;
+	width: 100%;
+	text-align: center;
+	position: absolute;
+	top: 200px;
+	text-shadow:0 0 3px white;
+	z-index: 100;
+	display: none;
+}
+
+#side1, #side2{
+	position: relative;
+	width: 400px;
+	height: 400px;
+	margin: 70px 50px 10px;
+}
+#side1{
+	float: left;
+}
+#side2{
+	float: right;
+}
+
+.trainer{
+	height: 75%;
+	position: absolute;
+}
+#side1 .trainer{
+	left: 0;
+}
+#side2 .trainer{
+	right: 0;
+}
+
+.pokemon{
+	height: 85%;
+	width: 85%;
+	position: absolute;
+	bottom: 0;
+	background-size: contain;
+	background-repeat: no-repeat;
+}
+#side1 .pokemon{
+	right: 0;
+	transform: scale(-1, 1);
+}
+#side2 .pokemon{
+	left: 0;
+}
+.bulbasaur{
+	background-image: url("../images/001Bulbasaur.png");
+}
+.charmander{
+	background-image: url("../images/004Charmander.png");
+}
+.squirtle{
+	background-image: url("../images/007Squirtle.png");
+}
+.ball{
+	background-size: 25%;
+	background-position: center 85%;
+	background-image: url("../images/SugimoriPokeBall.png");
+}
+
+.nameplate{
+	font-size: 30px;
+	position: absolute;
+	top: 0;
+}
+#side1 .nameplate{
+	left: 33%;
+}
+#side2 .nameplate{
+	right: 33%;
+}
+
+.score{
+	background: #444;
+	color: white;
+	position: absolute;
+	bottom: 0px;
+	padding: 6px;
+}
+#side1 .score{
+	left: 0;
+}
+#side2 .score{
+	right: 0;
+}
+
+.taunt{
+	border: 2px solid #777;
+	position: absolute;
+	font-size: 20px;
+	text-align: center;
+	width: 94%;
+	height: 20px;
+	padding: 3%;
+	border-radius: 20px;
+	top: -60px;
+	display: none;
+}
+
+.taunt:before{
+	content: "";
+	position: absolute;
+	bottom: -16px;
+	border-width: 16px 16px 0;
+	border-style: solid;
+	border-color: #777 transparent;
+	display: block;
+	width: 0;
+}
+.taunt:after{
+	content: "";
+	position: absolute;
+	bottom: -13px;
+	border-width: 13px 13px 0;
+	border-style: solid;
+	border-color: #fff transparent;
+	display: block;
+	width: 0
+}
+
+#side1 .taunt:before{
+	left: 77px;
+}
+#side1 .taunt:after{
+	left: 80px;
+}
+
+#side2 .taunt:before{
+	right: 64px;
+}
+#side2 .taunt:after{
+	right: 67px;
+}
+
+
+
+/* poke selection */
+
+#poke-select{
+	text-align: center;
+	max-width: 90%;
+	margin: auto;
+	border-top: 1px solid black;
+	clear: both;
+	min-height: 50px;
+}
 
 .oo1, .oo4, .oo7{
 	height: 50px;
@@ -25,13 +212,6 @@
 	background-image: url("../images/007.png");
 }
 
-#poke-select{
-	text-align: center;
-	max-width: 400px;
-	margin: auto;
-	border-top: 1px solid black;
-}
-
 /* chat styles */
 #chat{
 	max-width: 400px;
@@ -39,8 +219,13 @@
 }
 #banter{
 	border: 1px solid black;
+	padding: 5px 0;
+}
+#banter p{
+	padding: 5px 10px;
 }
 #send-banter{
+	display: none;
 	text-align: center;
 }
 #send-banter input{

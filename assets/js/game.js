@@ -18,20 +18,8 @@ var refStatus = database.ref("/status");
 
 var userID = "unique identifier";
 var userName = "";
-var playerRed = {
-	name: "red",
-	id: "",
-	wins: 0,
-	losses: 0,
-	choice: ""
-};
-var playerBlue = {
-	name: "blue",
-	id: "",
-	wins: 0,
-	losses: 0,
-	choice: ""
-};
+var id1 = "";
+var id2 = "";
 
 
 // Add ourselves to presence list when online.
@@ -43,8 +31,6 @@ refConnected.on("value", function(snap){
 		userID = n[n.length - 1];
 		console.log("my id: " + userID);
 		con.onDisconnect().remove();
-		// if disconnected user is a player, make leaving message
-		if(1){};
 	}
 });
 
@@ -71,6 +57,25 @@ refStatus.on("value", function(snap){
 
 // listens for change to player.  This includes initialization, choices, and score updates
 refPlayers.on("value", function(snap){
+	// sets local vars
+	if( snap.child("player1").exists() ){
+		var p1 = snap.val().player1;
+		$("#side1 .nameplate").text(p1.name);
+		id1 = p1.id;
+		$("#side1 .score").html("wins: "+p1.wins+"<br>losses: "+p1.losses);
+		if( snap.val().player1.choice === "undecided"){
+			$("#side1 .pokemon").removeClass("ball bulbasaur charmander squirtle");
+		}
+	}
+	if( snap.child("player2").exists() ){
+		p2 = snap.val().player2;
+		$("#side2 .nameplate").text(p2.name);
+		id2 = p2.id;
+		$("#side2 .score").html("wins: "+p2.wins+"<br>losses: "+p2.losses);
+		if( snap.val().player2.choice === "undecided"){
+			$("#side2 .pokemon").removeClass("ball bulbasaur charmander squirtle");
+		}
+	}
 	// making sure we have two players
 	if( snap.child("player1").exists() && snap.child("player2").exists() ){ // both players are set
 		$("#character-select").html("");
@@ -78,12 +83,12 @@ refPlayers.on("value", function(snap){
 		if(snap.val().player1.choice !== "undecided"){
 			// show ball for player 1
 			$("#select-1").remove();
-			$("#selection-1").html("ball");
+			$("#side1 .pokemon").addClass("ball");
 		}
 		if(snap.val().player2.choice !== "undecided"){
 			// show ball for player 2
 			$("#select-2").remove();
-			$("#selection-2").html("ball");
+			$("#side2 .pokemon").addClass("ball");
 		}
 		if( snap.val().player1.choice !== "undecided" && snap.val().player2.choice !== "undecided" ){
 			// resolve the game
@@ -153,15 +158,19 @@ $("#poke-select").on("click", "#select-2 div", function(){
 
 // sets the userName when submitted
 $("#name-form").on("submit", function(){
-	event.preventDefault();
-	userName = $("#name-form .input").val().trim();
-	$("#name-form").fadeOut();
+	var name = $("#name-form .input").val().trim();
+	if( name ){
+		event.preventDefault();
+		userName = name;
+		$("#name-form").fadeOut();
+		$("#send-banter, #character-select").fadeIn();
+	}
 })
 
 // send chat message to server when submitted
 $("#send-banter").on("submit", function(){
 	event.preventDefault();
-	if( $("#bant").val().trim() ){
+	if( $("#bant").val().trim() && userName !== "" ){
 		refBanter.set({
 			userID: 	userID,
 			userName:	userName,
@@ -176,11 +185,19 @@ refBanter.on("value", function(snap) {
 	if( snap.exists() ){
 		console.log(snap.val().userName + ": " + snap.val().message);
 		var nameColor = "black";
-		if( snap.val().userID === playerRed.id ){
+		if( snap.val().userID === id1 ){
 			// show chat bubble over first player
+			$("#side1 .taunt").text(snap.val().message).fadeIn();
+			setTimeout(function(){
+				$("#side1 .taunt").fadeOut();
+			}, 5000);
 			nameColor = "red";
-		}else if( snap.val().userID === playerBlue.id ){
+		}else if( snap.val().userID === id2 ){
 			// show chat bubble over second player
+			$("#side2 .taunt").text(snap.val().message).fadeIn();
+			setTimeout(function(){
+				$("#side2 .taunt").fadeOut();
+			}, 5000);
 			nameColor = "blue";
 		}
 		var name = $("<span>").text(snap.val().userName + ": ").addClass(nameColor);
@@ -196,52 +213,57 @@ refBanter.on("value", function(snap) {
 refBanter.onDisconnect().remove();
 
 function resolveMatch(snap){
-	var p1 = snap.val().player1.choice;
-	var p2 = snap.val().player2.choice;
-	var wins1 = snap.val().player1.wins;
-	var wins2 = snap.val().player2.wins;
-	var losses1 = snap.val().player1.losses;
-	var losses2 = snap.val().player2.losses;
+	var p1 = snap.val().player1;
+	var p2 = snap.val().player2;
+	var wins1 = p1.wins;
+	var wins2 = p2.wins;
+	var losses1 = p1.losses;
+	var losses2 = p2.losses;
 
-	if( p1 === p2 ){
+	$("#side1 .pokemon").removeClass("ball").addClass(p1.choice);
+	$("#side2 .pokemon").removeClass("ball").addClass(p2.choice);
+
+	if( p1.choice === p2.choice ){
 		// both are the same, draw
-		alert("draw");
+		$("#announce").html( "Draw!").fadeIn();
 		console.log("draw");
-	}else if( p1 === "timeout"
-		|| p1 === "bulbasaur" && p2 === "charmander" 
-		|| p1 === "charmander" && p2 === "squirtle" 
-		|| p1 === "squirtle" && p2 === "bulbasaur" ){
+	}else if( p1.choice === "timeout"
+		|| p1.choice === "bulbasaur" && p2.choice === "charmander" 
+		|| p1.choice === "charmander" && p2.choice === "squirtle" 
+		|| p1.choice === "squirtle" && p2.choice === "bulbasaur" ){
 		// player 1 loses
-		alert("Player 2 Wins");
-		console.log("player 2 wins");
+		console.log(p2.name + " wins");
+		$("#announce").html( p2.name + " Wins!").fadeIn();
 		wins2++;
 		losses1++;
-		$("#player1 .score").html("wins: "+wins1+"<br>losses: "+losses1);
-		$("#player2 .score").html("wins: "+wins2+"<br>losses: "+losses2);
 	}else{
 		// player 1 wins
-		alert("Player 1 Wins");
-		console.log("player 1 wins");
+		console.log(p1.name + " wins");
+		$("#announce").html( p1.name + " Wins!").fadeIn();
 		wins1++;
 		losses2++;
-		$("#player1 .score").html("wins: "+wins1+"<br>losses: "+losses1);
-		$("#player2 .score").html("wins: "+wins2+"<br>losses: "+losses2);
 	}
+
+	console.log(p1, p2, wins1, wins2, losses1, losses2);
+
 	// update players and reset choices
-	var ref2 = refPlayers.child("player2");
-	ref2.set({
-		id: snap.val().player2.id,
-		name: snap.val().player2.name,
-		wins: wins2,
-		losses: losses2,
-		choice: "undecided"
-	});
-	var ref2 = refPlayers.child("player1");
-	ref2.set({
-		id: snap.val().player1.id,
-		name: snap.val().player1.name,
-		wins: wins1,
-		losses: losses1,
-		choice: "undecided"
-	});
+	setTimeout(function(){
+		var ref2 = refPlayers.child("player2");
+		ref2.set({
+			id: p2.id,
+			name: p2.name,
+			wins: wins2,
+			losses: losses2,
+			choice: "undecided"
+		});
+		var ref1 = refPlayers.child("player1");
+		ref1.set({
+			id: p1.id,
+			name: p1.name,
+			wins: wins1,
+			losses: losses1,
+			choice: "undecided"
+		});
+		$("#announce").fadeOut();
+	}, 5000);
 }
