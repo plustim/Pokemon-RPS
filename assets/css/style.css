@@ -30,7 +30,43 @@ header h1{
 
 #character-select{
 	position: absolute;
+	width: 100%;
+	top: 0px;
+	text-align: center;
 	display: none;
+}
+
+#player1, #player2, 
+#x-player1, #x-player2{
+	height: 350px;
+	width: 210px;
+	display: inline-block;
+	background-size: contain;
+	background-repeat: no-repeat;
+	background-position: center;
+	border-radius: 25px;
+	margin: 0 30px;
+}
+
+#player1, #player2{
+	background-color: #eee;
+	cursor: pointer;
+	transition: 0.2s linear background-color;
+}
+#player1:hover, #player2:hover{
+	background-color: #ccc;
+}
+
+#x-player1, #x-player2{
+	background-color: #fff;
+	opacity: 0.2;
+}
+
+#player1, #x-player1{
+	background-image: url("../images/Red.png");
+}
+#player2, #x-player2{
+	background-image: url("../images/Blue.png");
 }
 
 /* main vs game scene */

@@ -79,6 +79,7 @@ refPlayers.on("value", function(snap){
 	// making sure we have two players
 	if( snap.child("player1").exists() && snap.child("player2").exists() ){ // both players are set
 		$("#character-select").html("");
+		$("#side1, #side2").fadeIn();
 		// show the vs scene
 		if(snap.val().player1.choice !== "undecided"){
 			// show ball for player 1
@@ -98,19 +99,23 @@ refPlayers.on("value", function(snap){
 		}
 		if( snap.val().player1.id === userID && snap.val().player1.choice === "undecided" ){ // user is player 1
 			// give options for player input
-			$("#poke-select").html("<span id='select-1'><div class='oo1' data-name='bulbasaur'></div><div class='oo4' data-name='charmander'></div><div class='oo7' data-name='squirtle'></div></span>");
+			$("#poke-select").html("<span id='select-1'>Pick Your Pokemon!<br><div class='oo1' data-name='bulbasaur'></div><div class='oo4' data-name='charmander'></div><div class='oo7' data-name='squirtle'></div></span>");
 		}else if( snap.val().player2.id === userID  && snap.val().player2.choice === "undecided" ){ // user is player 2
-			$("#poke-select").html("<span id='select-2'><div class='oo1' data-name='bulbasaur'></div><div class='oo4' data-name='charmander'></div><div class='oo7' data-name='squirtle'></div></span>");
+			$("#poke-select").html("<span id='select-2'>Pick Your Pokemon!<br><div class='oo1' data-name='bulbasaur'></div><div class='oo4' data-name='charmander'></div><div class='oo7' data-name='squirtle'></div></span>");
 		}
 
 	}else if( (!snap.child("player1").exists() && !snap.child("player2").exists()) || !snap.exists() ){ // no player is set, user can select either
-		$("#character-select").html( "<button id='player1'>red</button><button id='player2'>blue</button>" );
+		$("#side1, #side2").fadeOut();
+		$("#character-select").html( "<div id='player1'></div><div id='player2'></div><br>Pick a Character!" );
 	}else if( !snap.child("player1").exists() && snap.val().player2.id !== userID ){ // only player 2 is set, and user is not player 2, user can select 1
-		$("#character-select").html( "<button id='player1'>red</button>" );
+		$("#side1, #side2").fadeOut();
+		$("#character-select").html( "<div id='player1'></div><div id='x-player2'></div>" );
 	}else if( !snap.child("player2").exists() && snap.val().player1.id !== userID ){ // only player 1 is set, and user is not player 1, user can select 2
-		$("#character-select").html( "<button id='player2'>blue</button>" );
+		$("#side1, #side2").fadeOut();
+		$("#character-select").html( "<div id='x-player1'></div><div id='player2'></div>" );
 	}else if( !snap.child("player1").exists() || !snap.child("player2").exists() ){ // user is a player, but other player is not set: waiting for opponent
-		$("#character-select").html( "" );
+		$("#side1, #side2").fadeOut();
+		$("#character-select").html( "<div id='x-player1'></div><div id='x-player2'></div><br>Waiting for Opponent!" );
 	}
 });
 
