@@ -1,6 +1,6 @@
 # RPS-Multiplayer - A Pokemon themed multiplayer game
 
-## [Play it Here!](https://plustim.github.io/RPS-Multiplayer/)
+## [Play it Here!](https://plustim.github.io/Pokemon-RPS/)
 If you're unfamiliar with the Pokemon:
 
 | ![bulbasaur](assets/images/001.png) | ![charmander](assets/images/004.png) | ![squirtle](assets/images/007.png) |
